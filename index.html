@@ -44,16 +44,18 @@
   @keyframes breath { 0%,100%{opacity:.45;} 50%{opacity:1;} }
 
   /* ---------- 第二页：相框页 ---------- */
-  .p2 { background:linear-gradient(#244f63,#00365b); }
+  .p2 { background:#00365b; }
   .p2 .txt1 { left:50%; top:77%; width:259px; }       /* 文字1：儿子，最近过得好吗 —— 底部 */
-  .p2.on .txt2 { left:41%; top:35%; width:82px;
+  .p2.on .txt2 { left:41%; top:29.6%; width:82px;
                  animation:fadeIn 1.2s ease 2.6s forwards, pulseSoft 2.4s ease-in-out 3.8s infinite; }
   .bg2b { opacity:0; transition:opacity 1.8s ease; }
   .p2.changed .bg2b { opacity:1; }
 
-  /* 页面2/3 背景：宽度铺满整页，高度按原素材比例自动适配（100% auto，不拉伸变形），
-     上下少量留白用与素材边缘同色的渐变衔接，视觉上无拼接痕迹 */
+  /* 页面2/3 背景统一处理：宽度铺满整页，高度按原素材比例自动适配（100% auto，不拉伸变形）。
+     两页素材左右边缘及页面2底边均为纯色 #00365b；页面2 顶边中间有亮部，
+     故页面2 顶端与屏幕顶齐平（无上留白），底部留白与 #00365b 无缝衔接，效果与页面3 一致 */
   .p2 .bg, .p2 .bg2b, .p3 .bg { background-size:100% auto; background-position:center; }
+  .p2 .bg, .p2 .bg2b { background-position:center top; }
 
   /* 相框热区：覆盖整个相框（透明，对应拉伸后背景中的相框区域） */
   .frame-zone { position:absolute; left:50%; top:40%; width:85%; height:42%;
@@ -163,7 +165,7 @@
       <!-- 第5页 歌词滚动页 -->
       <section class="page p5" id="p5">
         <div class="bg" style="background-image:url('assets/%E9%A1%B5%E9%9D%A24.png')"></div>
-        <a class="lyrics" href="assets/Charles%20Gounod%20-%20%E5%9C%A3%E6%AF%8D%E9%A2%82.mp3" target="_blank" rel="noopener">
+        <a class="lyrics" href="https://y.music.163.com/m/song?id=412319072" target="_blank" rel="noopener">
           <img class="txt txt6 on-light" src="assets/%E6%96%87%E5%AD%976.png" alt="">
           <img class="txt txt7 on-light" src="assets/%E6%96%87%E5%AD%977.png" alt="">
         </a>
@@ -268,10 +270,9 @@
     cur = i;
     wrap.style.transform = 'translateY(-' + (i * PAGE_H) + 'px)';
     pages.forEach(function(p, idx){ p.classList.toggle('on', idx === i); });
-    /* 画布外的底色随页面切换：第二/三页与素材边缘同色，避免出现色差边 */
+    /* 画布外的底色随页面切换：第二/三页与素材边缘同色 #00365b，避免出现色差边 */
     document.body.style.background =
-      i === 1 ? 'linear-gradient(#244f63,#00365b)' :
-      i === 2 ? '#00365b' : '#d6c7b5';
+      (i === 1 || i === 2) ? '#00365b' : '#d6c7b5';
     if (i === 4 && !p5.classList.contains('scrolling')){
       setTimeout(function(){ p5.classList.add('scrolling'); }, 800);
     }
