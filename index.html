@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>圣母颂 · 献给最爱的人</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html, body { width:100%; height:100%; overflow:hidden; background:#d6c7b5;
+               font-family:"PingFang SC","Microsoft YaHei",sans-serif; touch-action:none; }
+
+  /* 固定设计稿 375×812，等比缩放适配任何屏幕（contain，内容永不裁切） */
+  #stage { position:fixed; inset:0; overflow:hidden; }
+  .scaler { position:absolute; left:50%; top:50%; width:375px; height:812px;
+            transform:translate(-50%,-50%); transform-origin:center; }
+  .wrap { position:absolute; left:0; top:0; width:375px; height:812px;
+          transition:transform .9s cubic-bezier(.65,.05,.36,1); will-change:transform; }
+  .page { position:relative; width:375px; height:812px; overflow:hidden; }
+  .bg { position:absolute; inset:0; background-size:cover; background-position:center; }
+
+  /* ---------- 文字素材 ---------- */
+  .txt { position:absolute; transform:translate(-50%,-50%); opacity:0; }
+  .page.on .txt.d1 { animation:fadeIn 1.3s ease .5s forwards; }
+  @keyframes fadeIn {
+    from { opacity:0; transform:translate(-50%,-50%) translateY(18px); }
+    to   { opacity:1; transform:translate(-50%,-50%) translateY(0); }
+  }
+  @keyframes pulseSoft {
+    0%,100% { opacity:1;   transform:translate(-50%,-50%) translateY(0); }
+    50%     { opacity:.65; transform:translate(-50%,-50%) translateY(3px); }
+  }
+  .on-light { filter:drop-shadow(0 1px 3px rgba(90,61,32,.45)); }
+
+  /* ---------- 第一页：加载页 ---------- */
+  .load-box { position:absolute; left:50%; top:58%; width:210px; transform:translateX(-50%);
+              text-align:center; cursor:pointer; }
+  .load-track { width:100%; height:5px; background:rgba(130,89,50,.22); border-radius:5px; overflow:hidden; }
+  .load-bar  { width:0; height:100%; background:#825932; border-radius:5px; transition:width .35s ease; }
+  .load-tip  { margin-top:14px; font-size:13px; color:#825932; letter-spacing:3px; opacity:0; transition:opacity .6s; }
+  .load-box.show .load-tip { opacity:1; }
+  .load-box.done { animation:breath 2s ease-in-out infinite; }
+  .load-box.done .load-tip { letter-spacing:6px; font-weight:600; }
+  @keyframes breath { 0%,100%{opacity:.45;} 50%{opacity:1;} }
+
+  /* ---------- 第二页：相框页 ---------- */
+  .p2 .txt1 { left:50%; top:77%; width:259px; }       /* 文字1：儿子，最近过得好吗 —— 底部 */
+  .p2.on .txt2 { left:41%; top:27.5%; width:82px;
+                 animation:fadeIn 1.2s ease 2.6s forwards, pulseSoft 2.4s ease-in-out 3.8s infinite; }
+  .bg2b { opacity:0; transition:opacity 1.8s ease; }
+  .p2.changed .bg2b { opacity:1; }
+
+  /* 相框热区：覆盖整个相框（透明） */
+  .frame-zone { position:absolute; left:50%; top:30%; width:293px; height:180px;
+                transform:translate(-50%,-50%); cursor:pointer; z-index:5; }
+
+  /* ---------- 第三页：眼泪页 ---------- */
+  .p3 .txt3 { left:50.5%; top:81%; width:270px; }   /* 文字3：最先出现 */
+  /* 眼泪：缩小，从相框右上流下，停在"点击眼泪"提示正上方 */
+  .tear3 { position:absolute; width:12px; left:85%; top:21%; margin-left:-6px; opacity:0; z-index:6; }
+  .page.on .tear3 { animation:tearFall 2.6s ease-in 1.8s 1 forwards; }
+  @keyframes tearFall {
+    0%   { opacity:0; transform:translateY(0) scale(.7); }
+    10%  { opacity:.95; transform:translateY(8px) scale(1); }
+    100% { opacity:.95; transform:translateY(195px); }   /* 停在"点击眼泪"正上方 */
+  }
+  /* 文字4：点击眼泪 —— 眼泪停稳后出现在其下方，可点击 */
+  .p3 .txt4 { left:85%; top:53%; width:49px; cursor:pointer; z-index:7; }
+  .p3.on .txt4 { animation:fadeIn 1.2s ease 4.6s forwards, pulseSoft 2.4s ease-in-out 5.8s infinite; }
+
+  /* ---------- 第四页：目送页 ---------- */
+  .p4 .scroller { position:absolute; inset:0; transform:translateY(130%);
+                  transition:transform 9s cubic-bezier(.16,.84,.32,1); }
+  .p4.scrolling .scroller { transform:translateY(0); }
+  .p4 .txt { opacity:1; animation:none !important; }
+  .p4 .txt5 { left:47%; top:44%; width:278px; }
+  .upbtn { position:absolute; left:50%; bottom:5.5%; width:52px; height:52px; margin-left:-26px;
+           border-radius:50%; border:2px solid rgba(130,89,50,.55); background:rgba(255,255,255,.35);
+           cursor:pointer; z-index:9; opacity:0; pointer-events:none; transition:opacity .8s ease;
+           display:flex; align-items:center; justify-content:center; }
+  .upbtn.show { opacity:1; pointer-events:auto; }
+  .upbtn::before { content:''; width:16px; height:16px; border-right:2px solid #825932; border-top:2px solid #825932;
+                   transform:rotate(-45deg) translate(2px,2px); }
+  .upbtn .pulse { position:absolute; inset:-6px; border-radius:50%; border:2px solid rgba(130,89,50,.35);
+                  animation:ring 2s ease-out infinite; }
+  @keyframes ring { 0%{ opacity:.8; transform:scale(.9);} 100%{ opacity:0; transform:scale(1.25);} }
+
+  /* ---------- 第五页：歌词滚动页 ---------- */
+  .p5 .lyrics { position:absolute; inset:0; transform:translateY(125%);
+                transition:transform 8.5s cubic-bezier(.16,.84,.32,1); }
+  .p5.scrolling .lyrics { transform:translateY(0); }
+  .p5 .txt { opacity:1; animation:none !important; }
+  .p5 .txt6 { left:50%; top:30%; width:285px; }
+  .p5 .txt7 { left:50%; top:53%; width:64px; }
+
+  /* ---------- 上滑箭头 ---------- */
+  .arrow { position:absolute; left:50%; bottom:4%; width:20px; height:20px;
+           border-left:2px solid rgba(255,255,255,.75); border-top:2px solid rgba(255,255,255,.75);
+           transform:rotate(45deg); animation:arrowUp 1.6s ease-in-out infinite; z-index:9; }
+  .p1 .arrow, .p4 .arrow, .p5 .arrow { display:none; }
+  @keyframes arrowUp { 0%,100%{ transform:rotate(45deg) translate(0,0); opacity:.35;}
+                       50%{ transform:rotate(45deg) translate(6px,-6px); opacity:1;} }
+
+  /* ---------- 音乐按钮 ---------- */
+  #music { position:absolute; top:14px; right:14px; z-index:99;
+           width:38px; height:38px; border-radius:50%; border:none; cursor:pointer;
+           background:rgba(0,0,0,.28); display:flex; align-items:center; justify-content:center;
+           backdrop-filter:blur(2px); }
+  #music .disc { width:20px; height:20px; animation:spin 3s linear infinite; transform-origin:center; }
+  #music.paused .disc { animation-play-state:paused; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="scaler" id="scaler">
+    <div class="wrap" id="wrap">
+
+      <!-- 第1页 加载页 -->
+      <section class="page p1">
+        <div class="bg" style="background-image:url('assets/%E5%8A%A0%E8%BD%BD%E9%A1%B5.png')"></div>
+        <div class="load-box" id="loadBox">
+          <div class="load-track"><div class="load-bar" id="loadBar"></div></div>
+          <div class="load-tip" id="loadTip">加载中 0%</div>
+        </div>
+      </section>
+
+      <!-- 第2页 相框页 -->
+      <section class="page p2" id="p2">
+        <div class="bg" style="background-image:url('assets/%E9%A1%B5%E9%9D%A22-1.png')"></div>
+        <div class="bg bg2b" style="background-image:url('assets/%E9%A1%B5%E9%9D%A22-2.png')"></div>
+        <div class="frame-zone" id="frameZone"></div>
+        <img class="txt txt2" src="assets/%E6%96%87%E5%AD%972.png" alt="">
+        <img class="txt txt1 d1" src="assets/%E6%96%87%E5%AD%971.png" alt="">
+        <div class="arrow"></div>
+      </section>
+
+      <!-- 第3页 眼泪页 -->
+      <section class="page p3" id="p3">
+        <div class="bg" style="background-image:url('assets/%E9%A1%B5%E9%9D%A23-1.png')"></div>
+        <img class="txt txt3 d1" src="assets/%E6%96%87%E5%AD%973.png" alt="">
+        <img class="tear3" id="tear3" src="assets/%E7%9C%BC%E6%B3%AA.png" alt="">
+        <img class="txt txt4" id="txt4" src="assets/%E6%96%87%E5%AD%974.png" alt="">
+        <div class="arrow"></div>
+      </section>
+
+      <!-- 第4页 目送页 -->
+      <section class="page p4" id="p4">
+        <div class="bg" style="background-image:url('assets/%E9%A1%B5%E9%9D%A24.png')"></div>
+        <div class="scroller">
+          <img class="txt txt5" src="assets/%E6%96%87%E5%AD%975.png" alt="">
+        </div>
+        <div class="upbtn" id="upbtn"><span class="pulse"></span></div>
+      </section>
+
+      <!-- 第5页 歌词滚动页 -->
+      <section class="page p5" id="p5">
+        <div class="bg" style="background-image:url('assets/%E9%A1%B5%E9%9D%A24.png')"></div>
+        <a class="lyrics" href="assets/Charles%20Gounod%20-%20%E5%9C%A3%E6%AF%8D%E9%A2%82.mp3" target="_blank" rel="noopener">
+          <img class="txt txt6 on-light" src="assets/%E6%96%87%E5%AD%976.png" alt="">
+          <img class="txt txt7 on-light" src="assets/%E6%96%87%E5%AD%977.png" alt="">
+        </a>
+      </section>
+
+    </div>
+  </div>
+</div>
+
+<button id="music" class="paused" aria-label="音乐开关">
+  <svg class="disc" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="1.6"/>
+    <circle cx="12" cy="12" r="2.4" fill="#fff"/>
+  </svg>
+</button>
+
+<audio id="bgm" src="assets/Charles%20Gounod%20-%20%E5%9C%A3%E6%AF%8D%E9%A2%82.mp3" loop preload="auto"></audio>
+
+<script>
+  var TOTAL = 5, cur = 0, busy = false, entered = false, PAGE_H = 812;
+  var wrap = document.getElementById('wrap');
+  var scaler = document.getElementById('scaler');
+  var bgm  = document.getElementById('bgm');
+  var musicBtn = document.getElementById('music');
+  var pages = document.querySelectorAll('.page');
+  var p2 = document.getElementById('p2'), p5 = document.getElementById('p5'),
+      upbtn = document.getElementById('upbtn');
+
+  /* ---------- 等比缩放：任何屏幕完整显示 ---------- */
+  function resize(){
+    var s = Math.min(window.innerWidth / 375, window.innerHeight / 812);
+    scaler.style.transform = 'translate(-50%,-50%) scale(' + s + ')';
+  }
+  window.addEventListener('resize', resize);
+  window.addEventListener('orientationchange', function(){ setTimeout(resize, 100); });
+  resize();
+
+  /* ---------- 预加载 + 加载条 ---------- */
+  var imgs = ['%E5%8A%A0%E8%BD%BD%E9%A1%B5.png','%E9%A1%B5%E9%9D%A22-1.png','%E9%A1%B5%E9%9D%A22-2.png',
+              '%E9%A1%B5%E9%9D%A23-1.png','%E9%A1%B5%E9%9D%A24.png','%E6%96%87%E5%AD%971.png','%E6%96%87%E5%AD%972.png',
+              '%E6%96%87%E5%AD%973.png','%E6%96%87%E5%AD%974.png','%E6%96%87%E5%AD%975.png','%E6%96%87%E5%AD%976.png',
+              '%E6%96%87%E5%AD%977.png','%E7%9C%BC%E6%B3%AA.png'];
+  var loaded = 0;
+  var loadBox = document.getElementById('loadBox'),
+      loadBar = document.getElementById('loadBar'),
+      loadTip = document.getElementById('loadTip');
+  loadBox.classList.add('show');
+
+  imgs.forEach(function(src){
+    var im = new Image();
+    im.onload = im.onerror = done;
+    im.src = 'assets/' + src;
+  });
+  function done(){
+    loaded++;
+    var pct = Math.round(loaded / imgs.length * 100);
+    loadBar.style.width = pct + '%';
+    loadTip.textContent = '加载中 ' + pct + '%';
+    if (loaded >= imgs.length){
+      loadBox.classList.add('done');
+      loadTip.textContent = '轻 触 屏 幕 开 始';
+    }
+  }
+
+  /* ---------- 点击加载页：进入 + 播放音乐 ---------- */
+  function enter(){
+    if (entered) return;
+    entered = true;
+    bgm.play().then(function(){ musicBtn.classList.remove('paused'); }).catch(function(){});
+    go(1);
+  }
+  loadBox.addEventListener('click', enter);
+
+  /* ---------- 第二页：点击相框 → 渐变动画 → 跳第三页 ---------- */
+  document.getElementById('frameZone').addEventListener('click', function(e){
+    e.stopPropagation();
+    if (p2.classList.contains('changed')) return;
+    p2.classList.add('changed');
+    setTimeout(function(){ go(2); }, 1900);
+  });
+
+  /* ---------- 第三页：点击眼泪 → 第四页（目送滚动） ---------- */
+  var scrollEnded = false;
+  function toP4(e){
+    e.stopPropagation();
+    go(3);
+    if (!p4.classList.contains('scrolling')){
+      setTimeout(function(){ p4.classList.add('scrolling'); }, 500);
+      var scroller = document.querySelector('.p4 .scroller');
+      var showBtn = function(){ if (!scrollEnded){ scrollEnded = true; upbtn.classList.add('show'); } };
+      scroller.addEventListener('transitionend', showBtn, { once:true });
+      setTimeout(showBtn, 10300);
+    }
+  }
+  document.getElementById('tear3').addEventListener('click', toP4);
+  document.getElementById('txt4').addEventListener('click', toP4);
+
+  /* ---------- 翻页 ---------- */
+  function go(i){
+    if (i < 0 || i >= TOTAL || busy) return;
+    busy = true;
+    cur = i;
+    wrap.style.transform = 'translateY(-' + (i * PAGE_H) + 'px)';
+    pages.forEach(function(p, idx){ p.classList.toggle('on', idx === i); });
+    if (i === 4 && !p5.classList.contains('scrolling')){
+      setTimeout(function(){ p5.classList.add('scrolling'); }, 800);
+    }
+    setTimeout(function(){ busy = false; }, 950);
+  }
+  pages[0].classList.add('on');
+
+  var startY = 0;
+  document.addEventListener('touchstart', function(e){ startY = e.touches[0].clientY; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    var dy = e.changedTouches[0].clientY - startY;
+    if (Math.abs(dy) > 50) dy < 0 ? go(cur + 1) : go(cur - 1);
+  }, {passive:true});
+  document.addEventListener('wheel', function(e){
+    if (Math.abs(e.deltaY) < 20) return;
+    e.deltaY > 0 ? go(cur + 1) : go(cur - 1);
+  }, {passive:true});
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') go(cur + 1);
+    if (e.key === 'ArrowUp'   || e.key === 'PageUp')   go(cur - 1);
+  });
+
+  /* ---------- 向上滑动按钮 → 第五页歌词 ---------- */
+  upbtn.addEventListener('click', function(e){ e.stopPropagation(); go(4); });
+
+  /* ---------- 音乐开关 ---------- */
+  musicBtn.addEventListener('click', function(){
+    if (bgm.paused){ bgm.play(); musicBtn.classList.remove('paused'); }
+    else { bgm.pause(); musicBtn.classList.add('paused'); }
+  });
+</script>
+</body>
+</html>
