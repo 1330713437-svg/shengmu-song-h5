@@ -51,24 +51,22 @@
   .bg2b { opacity:0; transition:opacity 1.8s ease; }
   .p2.changed .bg2b { opacity:1; }
 
-  /* bgbox：与背景原图(2667×5150)比例完全一致，页面2/3 背景完整显示不裁切 */
-  .bgbox { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-           aspect-ratio:2667/5150; width:375px; }
-  .bgbox .bg { background-size:100% 100%; }
+  /* 页面2/3 背景：整图拉伸铺满整页（100% 100%），任何设备都完整显示、无棕色背景 */
+  .p2 .bg, .p2 .bg2b, .p3 .bg { background-size:100% 100%; background-position:center; }
 
-  /* 相框热区：覆盖整个相框（透明，原图百分比坐标） */
-  .frame-zone { position:absolute; left:50%; top:30%; width:85%; height:27%;
+  /* 相框热区：覆盖整个相框（透明，对应拉伸后背景中的相框区域） */
+  .frame-zone { position:absolute; left:50%; top:40%; width:85%; height:42%;
                 transform:translate(-50%,-50%); cursor:pointer; z-index:5; }
 
   /* ---------- 第三页：眼泪页 ---------- */
   .p3 { background:linear-gradient(#274961,#00365b); }
   .p3 .txt3 { left:50.5%; top:81%; width:270px; }   /* 文字3：最先出现 */
   /* 眼泪：缩小，从相框右上流下，停在"点击眼泪"提示正上方（落点略下移） */
-  .tear3 { position:absolute; width:12px; left:85%; top:17.5%; margin-left:-6px; opacity:0; z-index:6; }
+  .tear3 { position:absolute; width:12px; left:85%; top:21%; margin-left:-6px; opacity:0; z-index:6; }
   .page.on .tear3 { animation:tearFall 2.6s ease-in 1.8s 1 forwards; }
   @keyframes tearFall {
-    0%   { opacity:0; top:17.5%; }
-    10%  { opacity:.95; top:19%; }
+    0%   { opacity:0; top:21%; }
+    10%  { opacity:.95; top:22.5%; }
     100% { opacity:.95; top:47%; }   /* 停在"点击眼泪"正上方 */
   }
   /* 文字4：点击眼泪 —— 眼泪停稳后出现在其下方，可点击 */
@@ -135,24 +133,20 @@
 
       <!-- 第2页 相框页 -->
       <section class="page p2" id="p2">
-        <div class="bgbox">
-          <div class="bg" style="background-image:url('assets/%E9%A1%B5%E9%9D%A22-1.png')"></div>
-          <div class="bg bg2b" style="background-image:url('assets/%E9%A1%B5%E9%9D%A22-2.png')"></div>
-          <div class="frame-zone" id="frameZone"></div>
-          <img class="txt txt2" src="assets/%E6%96%87%E5%AD%972.png" alt="">
-        </div>
+        <div class="bg" style="background-image:url('assets/%E9%A1%B5%E9%9D%A22-1.png')"></div>
+        <div class="bg bg2b" style="background-image:url('assets/%E9%A1%B5%E9%9D%A22-2.png')"></div>
+        <div class="frame-zone" id="frameZone"></div>
+        <img class="txt txt2" src="assets/%E6%96%87%E5%AD%972.png" alt="">
         <img class="txt txt1 d1" src="assets/%E6%96%87%E5%AD%971.png" alt="">
         <div class="arrow"></div>
       </section>
 
       <!-- 第3页 眼泪页 -->
       <section class="page p3" id="p3">
-        <div class="bgbox">
-          <div class="bg" style="background-image:url('assets/%E9%A1%B5%E9%9D%A23-1.png')"></div>
-          <img class="tear3" id="tear3" src="assets/%E7%9C%BC%E6%B3%AA.png" alt="">
-          <img class="txt txt4" id="txt4" src="assets/%E6%96%87%E5%AD%974.png" alt="">
-        </div>
+        <div class="bg" style="background-image:url('assets/%E9%A1%B5%E9%9D%A23-1.png')"></div>
         <img class="txt txt3 d1" src="assets/%E6%96%87%E5%AD%973.png" alt="">
+        <img class="tear3" id="tear3" src="assets/%E7%9C%BC%E6%B3%AA.png" alt="">
+        <img class="txt txt4" id="txt4" src="assets/%E6%96%87%E5%AD%974.png" alt="">
         <div class="arrow"></div>
       </section>
 
@@ -273,6 +267,10 @@
     cur = i;
     wrap.style.transform = 'translateY(-' + (i * PAGE_H) + 'px)';
     pages.forEach(function(p, idx){ p.classList.toggle('on', idx === i); });
+    /* 画布外的底色随页面切换：第二/三页为深色，避免出现棕色边 */
+    document.body.style.background =
+      i === 1 ? 'linear-gradient(#55716e,#00365b)' :
+      i === 2 ? 'linear-gradient(#274961,#00365b)' : '#d6c7b5';
     if (i === 4 && !p5.classList.contains('scrolling')){
       setTimeout(function(){ p5.classList.add('scrolling'); }, 800);
     }
