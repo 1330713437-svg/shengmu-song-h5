@@ -82,7 +82,7 @@
   .p4 .txt5 { left:47%; top:44%; width:278px; }
   .upbtn { position:absolute; left:50%; bottom:5.5%; width:52px; height:52px; margin-left:-26px;
            border-radius:50%; border:2px solid rgba(130,89,50,.55); background:rgba(255,255,255,.35);
-           cursor:pointer; z-index:9; opacity:0; pointer-events:none; transition:opacity .8s ease;
+           cursor:pointer; z-index:9; opacity:0; pointer-events:none;
            display:flex; align-items:center; justify-content:center; }
   .upbtn.show { opacity:1; pointer-events:auto; }
   .upbtn::before { content:''; position:absolute; left:50%; top:50%; width:15px; height:15px;
@@ -164,7 +164,7 @@
       <!-- 第5页 歌词滚动页 -->
       <section class="page p5" id="p5">
         <div class="bg" style="background-image:url('assets/%E9%A1%B5%E9%9D%A24.png')"></div>
-        <a class="lyrics" href="https://y.music.163.com/m/song?id=412319072" target="_blank" rel="noopener">
+        <a class="lyrics" href="https://y.music.163.com/m/song?id=488647475" target="_blank" rel="noopener">
           <img class="txt txt6 on-light" src="assets/%E6%96%87%E5%AD%976.png" alt="">
           <img class="txt txt7 on-light" src="assets/%E6%96%87%E5%AD%977.png" alt="">
         </a>
@@ -268,7 +268,7 @@
       setTimeout(function(){
         p4.classList.add('scrolling');
         document.querySelector('.p4 .scroller').addEventListener('transitionend', showBtn, { once:true });
-        setTimeout(showBtn, 10300);
+        setTimeout(showBtn, 9800);
       }, 500);
     }
     if (i === 4 && !p5.classList.contains('scrolling')){
