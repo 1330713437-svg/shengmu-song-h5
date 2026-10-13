@@ -51,11 +51,9 @@
   .bg2b { opacity:0; transition:opacity 1.8s ease; }
   .p2.changed .bg2b { opacity:1; }
 
-  /* 页面2 背景：采用延展版素材（页面2-1/2-2-ext：顶部向上镜像延续光锥梯形、底部补素材同色藏青），
-     延展后画幅比例与页面完全一致，100% 100% 满版铺放——图形完整不分割、无变形、无留白，效果与页面3一致；
-     页面3 背景保持 100% auto 居中 */
-  .p2 .bg, .p2 .bg2b { background-size:100% 100%; background-position:center; }
-  .p3 .bg { background-size:100% auto; background-position:center; }
+  /* 页面2/3 背景统一处理：宽度铺满整页，高度按原素材比例自动适配（100% auto，不拉伸变形），
+     居中显示，两页处理方式完全一致 */
+  .p2 .bg, .p2 .bg2b, .p3 .bg { background-size:100% auto; background-position:center; }
 
   /* 相框热区：覆盖整个相框（透明，对应拉伸后背景中的相框区域） */
   .frame-zone { position:absolute; left:50%; top:40%; width:85%; height:42%;
@@ -137,8 +135,8 @@
 
       <!-- 第2页 相框页 -->
       <section class="page p2" id="p2">
-        <div class="bg" style="background-image:url('assets/%E9%A1%B5%E9%9D%A22-1-ext.png')"></div>
-        <div class="bg bg2b" style="background-image:url('assets/%E9%A1%B5%E9%9D%A22-2-ext.png')"></div>
+        <div class="bg" style="background-image:url('assets/%E9%A1%B5%E9%9D%A22-1.png')"></div>
+        <div class="bg bg2b" style="background-image:url('assets/%E9%A1%B5%E9%9D%A22-2.png')"></div>
         <div class="frame-zone" id="frameZone"></div>
         <img class="txt txt2" src="assets/%E6%96%87%E5%AD%972.png" alt="">
         <img class="txt txt1 d1" src="assets/%E6%96%87%E5%AD%971.png" alt="">
@@ -205,7 +203,7 @@
   resize();
 
   /* ---------- 预加载 + 加载条 ---------- */
-  var imgs = ['%E5%8A%A0%E8%BD%BD%E9%A1%B5.png','%E9%A1%B5%E9%9D%A22-1-ext.png','%E9%A1%B5%E9%9D%A22-2-ext.png',
+  var imgs = ['%E5%8A%A0%E8%BD%BD%E9%A1%B5.png','%E9%A1%B5%E9%9D%A22-1.png','%E9%A1%B5%E9%9D%A22-2.png',
               '%E9%A1%B5%E9%9D%A23-1.png','%E9%A1%B5%E9%9D%A24.png','%E6%96%87%E5%AD%971.png','%E6%96%87%E5%AD%972.png',
               '%E6%96%87%E5%AD%973.png','%E6%96%87%E5%AD%974.png','%E6%96%87%E5%AD%975.png','%E6%96%87%E5%AD%976.png',
               '%E6%96%87%E5%AD%977.png','%E7%9C%BC%E6%B3%AA.png'];
