@@ -46,16 +46,14 @@
   /* ---------- 第二页：相框页 ---------- */
   .p2 { background:#00365b; }
   .p2 .txt1 { left:50%; top:77%; width:259px; }       /* 文字1：儿子，最近过得好吗 —— 底部 */
-  .p2.on .txt2 { left:41%; top:29.6%; width:82px;
+  .p2.on .txt2 { left:41%; top:35%; width:82px;
                  animation:fadeIn 1.2s ease 2.6s forwards, pulseSoft 2.4s ease-in-out 3.8s infinite; }
   .bg2b { opacity:0; transition:opacity 1.8s ease; }
   .p2.changed .bg2b { opacity:1; }
 
-  /* 页面2/3 背景统一处理：宽度铺满整页，高度按原素材比例自动适配（100% auto，不拉伸变形）。
-     两页素材左右边缘及页面2底边均为纯色 #00365b；页面2 顶边中间有亮部，
-     故页面2 顶端与屏幕顶齐平（无上留白），底部留白与 #00365b 无缝衔接，效果与页面3 一致 */
+  /* 页面2/3 背景统一处理：宽度铺满整页，高度按原素材比例自动适配（100% auto，不拉伸变形），
+     居中显示，两页处理方式完全一致 */
   .p2 .bg, .p2 .bg2b, .p3 .bg { background-size:100% auto; background-position:center; }
-  .p2 .bg, .p2 .bg2b { background-position:center top; }
 
   /* 相框热区：覆盖整个相框（透明，对应拉伸后背景中的相框区域） */
   .frame-zone { position:absolute; left:50%; top:40%; width:85%; height:42%;
@@ -105,7 +103,8 @@
   /* ---------- 上滑箭头 ---------- */
   .arrow { position:absolute; left:50%; bottom:4%; width:20px; height:20px;
            border-left:2px solid rgba(255,255,255,.75); border-top:2px solid rgba(255,255,255,.75);
-           transform:rotate(45deg); animation:arrowUp 1.6s ease-in-out infinite; z-index:9; }
+           transform:rotate(45deg); animation:arrowUp 1.6s ease-in-out infinite; z-index:9; cursor:pointer; }
+  .arrow::after { content:''; position:absolute; inset:-16px; }   /* 扩大点击热区，不改变外观 */
   .p1 .arrow, .p4 .arrow, .p5 .arrow { display:none; }
   @keyframes arrowUp { 0%,100%{ transform:rotate(45deg) translate(0,0); opacity:.35;}
                        50%{ transform:rotate(45deg) translate(6px,-6px); opacity:1;} }
@@ -249,17 +248,8 @@
 
   /* ---------- 第三页：点击眼泪 → 第四页（目送滚动） ---------- */
   var scrollEnded = false;
-  function toP4(e){
-    e.stopPropagation();
-    go(3);
-    if (!p4.classList.contains('scrolling')){
-      setTimeout(function(){ p4.classList.add('scrolling'); }, 500);
-      var scroller = document.querySelector('.p4 .scroller');
-      var showBtn = function(){ if (!scrollEnded){ scrollEnded = true; upbtn.classList.add('show'); } };
-      scroller.addEventListener('transitionend', showBtn, { once:true });
-      setTimeout(showBtn, 10300);
-    }
-  }
+  function showBtn(){ if (!scrollEnded){ scrollEnded = true; upbtn.classList.add('show'); } }
+  function toP4(e){ e.stopPropagation(); go(3); }
   document.getElementById('tear3').addEventListener('click', toP4);
   document.getElementById('txt4').addEventListener('click', toP4);
 
@@ -273,12 +263,25 @@
     /* 画布外的底色随页面切换：第二/三页与素材边缘同色 #00365b，避免出现色差边 */
     document.body.style.background =
       (i === 1 || i === 2) ? '#00365b' : '#d6c7b5';
+    if (i === 3 && !p4.classList.contains('scrolling')){
+      /* 无论通过哪种方式进入第四页（点眼泪/箭头/滑动），目送文字都开始滚动 */
+      setTimeout(function(){
+        p4.classList.add('scrolling');
+        document.querySelector('.p4 .scroller').addEventListener('transitionend', showBtn, { once:true });
+        setTimeout(showBtn, 10300);
+      }, 500);
+    }
     if (i === 4 && !p5.classList.contains('scrolling')){
       setTimeout(function(){ p5.classList.add('scrolling'); }, 800);
     }
     setTimeout(function(){ busy = false; }, 950);
   }
   pages[0].classList.add('on');
+
+  /* ---------- 底部上滑箭头：点击进入下一页 ---------- */
+  document.querySelectorAll('.arrow').forEach(function(a){
+    a.addEventListener('click', function(e){ e.stopPropagation(); go(cur + 1); });
+  });
 
   var startY = 0;
   document.addEventListener('touchstart', function(e){ startY = e.touches[0].clientY; }, {passive:true});
